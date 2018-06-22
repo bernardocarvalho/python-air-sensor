@@ -4,7 +4,7 @@
 __author__ = "Bernardo Carvalho <bernardo.carvalho@tecnico.ulisboa.pt>"
 __license__ = "GPL3"
 __version__ = "1.0"
-
+#https://github.com/edwork/RPI-MQTT-JSON-Multisensor/blob/master/multisensor.py
 ### RPI-MQTT-JSON-Multisensor
 #
 #
