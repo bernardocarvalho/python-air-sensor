@@ -1,9 +1,20 @@
 #!/usr/bin/python3
 #https://github.com/custom-build-robots/Feinstaubsensor/blob/master/web_feinstaub_bme280.py
+########################################################
+__author__ = "Bernardo Carvalho <bernardo.carvalho@tecnico.ulisboa.pt>"
+__license__ = "GPL3"
+__version__ = "1.0"
+
+### RPI-MQTT-JSON-Multisensor
+#
+#
+########################################################
 
 import serial, time, struct
 import os
 import csv
+import json
+import paho.mqtt.publish as publish
 
 #Sensor Libraries
 import sds011
@@ -11,6 +22,25 @@ import Adafruit_DHT
 #https://pypi.org/project/RPi.bme280/
 import smbus2
 import bme280
+
+## Configuration
+# MQTT Server Information
+MQTT_HOST = 'epics.ipfn.ist.utl.pt'
+MQTT_PORT = 1883
+MQTT_USER = 'ist'
+MQTT_PASSWORD = 'isttok'
+MQTT_CLIENT_ID = 'pi-sensor-1'
+MQTT_TOPIC_PREFIX = 'ipfn/pisensornode/air'
+## Sensor Information
+#TEMP_SENSOR_PIN = 17 ## GPIO PIN
+DHT_SENSOR_PIN = 4 ## GPIO PIN
+
+## Setup
+sensor_data = {}
+auth_info = {
+  'username':MQTT_USER,
+  'password':MQTT_PASSWORD
+  }
 
 global dir_path
 dir_path = "/home/pi/particles/"
@@ -54,9 +84,9 @@ sensorDHT = Adafruit_DHT.DHT22
 
 # Example using a Raspberry Pi with DHT sensor
 # connected to GPIO4.
-pin = 4
+#pin = 4
 
-humidity, temperature = Adafruit_DHT.read_retry(sensorDHT, pin)
+humidity, temperature = Adafruit_DHT.read_retry(sensorDHT, DHT_SENSOR_PIN)
 if humidity is not None and temperature is not None:
     print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity))
 else:
@@ -81,15 +111,32 @@ print(data.humidity)
 
 # there is a handy string representation too
 print(data)
-	
-while True:
-    time.sleep(10)
-    data = bme280.sample(bus, address, calibration_params)
-    humidity, temperature = Adafruit_DHT.read_retry(sensorDHT, pin)
-    pm_25, pm_10 = sensor.query()
-    try:
-        print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity))
-    except TypeError:
-...     print("Oops!")
-    write_csv(data.timestamp, pm_25, pm_10, temperature, humidity, data.temperature, data.pressure, "sensor.log")
+
+try:
+    while True:
+        data = bme280.sample(bus, address, calibration_params)
+        humidity, temperature = Adafruit_DHT.read_retry(sensorDHT, DHT_SENSOR_PIN)
+        try:
+            humidity = round(humidity, 3) ## Round to 3 places
+            temperature = round(temperature, 3) ## Round to 3 places
+            pm_25, pm_10 = sensor.query()
+            sensor_data['temperature'] = temperature
+            sensor_data['humidity'] = humidity
+            sensor_data['pm_25'] = pm_25
+            sensor_data['pm_10'] = pm_10
+            print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity))
+            write_csv(data.timestamp, pm_25, pm_10, temperature, humidity, data.temperature, data.pressure, "sensor.log")
+            ## Publish the message to the MQTT Broker
+            publish.single(MQTT_TOPIC_PREFIX,
+                        json.dumps(sensor_data),
+                        hostname = MQTT_HOST,
+                        client_id = MQTT_CLIENT_ID,
+                        auth = auth_info,
+                        port = MQTT_PORT
+                       )
+        except TypeError:
+            print("Oops!")
+        time.sleep(10)
+except KeyboardInterrupt:
+    pass
 
