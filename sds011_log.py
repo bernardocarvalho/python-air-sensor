@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 #https://github.com/custom-build-robots/Feinstaubsensor/blob/master/web_feinstaub_bme280.py
 ########################################################
 __author__ = "Bernardo Carvalho <bernardo.carvalho@tecnico.ulisboa.pt>"
@@ -25,12 +26,16 @@ import bme280
 
 ## Configuration
 # MQTT Server Information
-MQTT_HOST = 'epics.ipfn.ist.utl.pt'
+#MQTT_HOST = 'epics.ipfn.ist.utl.pt'
+MQTT_HOST = 'mqtt.dioty.co'
 MQTT_PORT = 1883
-MQTT_USER = 'ist'
-MQTT_PASSWORD = 'isttok'
+#MQTT_USER = 'ist'
+#MQTT_PASSWORD = 'isttok'
+MQTT_USER = 'bernardo.brotas@gmail.com'
+MQTT_PASSWORD = '995ef6b2'
 MQTT_CLIENT_ID = 'pi-sensor-1'
-MQTT_TOPIC_PREFIX = 'ipfn/pisensornode/air'
+MQTT_TOPIC_PREFIX = '/bernardo.brotas@gmail.com/air-quality/lx/aveua'
+#MQTT_TOPIC_PREFIX = 'ipfn/pisensornode/air'
 ## Sensor Information
 #TEMP_SENSOR_PIN = 17 ## GPIO PIN
 DHT_SENSOR_PIN = 4 ## GPIO PIN
