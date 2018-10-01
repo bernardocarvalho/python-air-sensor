@@ -12,7 +12,7 @@ __version__ = "1.0"
 ########################################################
 
 import serial, time, struct
-import os
+import os, sys
 import csv
 import json
 import paho.mqtt.publish as publish
@@ -140,7 +140,9 @@ try:
                         port = MQTT_PORT
                        )
         except TypeError:
-            print("Oops!")
+            print("TypeError!")
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
         time.sleep(10)
 except KeyboardInterrupt:
     pass
