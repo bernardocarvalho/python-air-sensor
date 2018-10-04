@@ -24,6 +24,10 @@ import Adafruit_DHT
 import smbus2
 import bme280
 
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
 ## Configuration
 # MQTT Server Information
 #MQTT_HOST = 'epics.ipfn.ist.utl.pt'

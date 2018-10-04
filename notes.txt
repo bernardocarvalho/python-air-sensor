@@ -5,4 +5,9 @@ tmux new -s SDS
 python3 sds011_log.py  
 
 mosquitto_sub -h mqtt.dioty.co -t /bernardo.brotas@gmail.com/#  -u bernardo.brotas@gmail.com -P 995ef6b2
+mosquitto_sub -h mqtt.dioty.co -t /bernardo.brotas@gmail.com/air-quality/lx/aveua  -u bernardo.brotas@gmail.com -P 995ef6b2
+
+to start as a deamon put this on /etc/rc.local
+# Air particle sensor DEAMON
+tmux new-session -d -s deamonSDS 'sudo -u pi /home/pi/python-air-sensor/sds011_log.py'
 
