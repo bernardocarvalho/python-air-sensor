@@ -5,8 +5,12 @@ __author__ = "Bernardo Carvalho <bernardo.carvalho@tecnico.ulisboa.pt>"
 __license__ = "GPL3"
 __version__ = "1.0"
 ### RPI MPU9250
-#
-#
+# https://github.com/Intelligent-Vehicle-Perception/MPU-9250-Sensors-Data-Collect
+#units of the MPU-9250
+#Accelerometer	g (1g = 9.80665 m/s²)
+#Gyroscope	degrees per second (°/s)
+#Magnetometer	microtesla (μT) , Lisboa ~ 44 uT
+#Temperature	celsius degrees (°C)
 ########################################################
 
 #####################################################################
@@ -65,8 +69,10 @@ mpu.configure() # Apply the settings to the registers.
 ##################################################
 # Set Calibration                                #
 ##################################################
-# mpu.abias = [-0.08004239710365854, 0.458740234375, 0.2116996951219512]
-# mpu.gbias = [0.8958025676448171, 0.45292551924542684, 0.866773651867378]
+# mpu.abias = [0.16480683117378048, 0.08562190358231707, 0.043683307926829285] 
+# ori [-0.08004239710365854, 0.458740234375, 0.2116996951219512]
+# mpu.gbias = [1.3265842344702743, 0.091552734375, -0.2480483636623476]
+# ori [0.8958025676448171, 0.45292551924542684, 0.866773651867378]
 # mpu.magScale = [1.0104166666666667, 0.9797979797979799, 1.0104166666666667]
 # mpu.mbias = [2.6989010989010986, 2.7832417582417586, 2.6989010989010986]
 
@@ -87,22 +93,30 @@ labels = mpu.getAllDataLabels() # return labels with data description for each a
 # 'master_gyro_z', 'slave_acc_x', 'slave_acc_y', 'slave_acc_z', 'slave_gyro_x', 'slave_gyro_y', 
 # 'slave_gyro_z', 'mag_x', 'mag_y', 'mag_z', 'master_temp', 'slave_temp']
 
-def write_csv_line(file, data):
-    line = str(data[0])+";" 
+def write_csv_line(file, data, time0):
+    #timestamp
+    line = str(data[0]  -time0)+";" 
     #master_acc
-    line = line +str(data[1])+';'+str(data[2]) + ';'+str(data[2])
+    line = line +str(data[1])+';'+str(data[2]) + ';'+str(data[3])+';'
     #master_gyro
-    line = line +str(data[3])+';'+str(data[4])+';'+str(data[5]) +'\n'
+    line = line +str(data[4])+';'+str(data[5])+';'+str(data[6]) +';'
+    #mag
+    line = line +str(data[13])+';'+str(data[14])+';' + str(data[15]) +';'
+    #master_temp
+    line = line +str(data[16])+'\n' 
     file.write(line)
 
 try:
 # "w" overwrite
-    f = open("demofile2.txt", "a")
+    f = open("mpudata.csv", "w")
+    line =  'timestamp; acc_x; acc_y; acc_z; gyro_x; gyro_y; gyro_z; mag_x; mag_y; mag_z \n'
+    f.write(line)
+    time0 = time.time()
     for number in range(500):
         data = mpu.getAllData() # returns a array with data from all sensors
-        write_csv_line(f, data)
+        write_csv_line(f, data, time0)
 
-    f.write("Now the file has more content!\n")
+#    f.write("Now the file has more content!\n")
     f.close()
 except KeyboardInterrupt:
     pass

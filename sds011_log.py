@@ -52,7 +52,7 @@ auth_info = {
   }
 
 global dir_path
-dir_path = "/home/pi/particles/"
+dir_path = "./"
 
 def write_log(msg):
     global dir_path
@@ -75,8 +75,8 @@ def write_csv(time, pm_25, pm_10, temp, humidity, temp2, pressure, fname):
 
 # Try to attach serial port to Particle Sensor vlues
 try:
-    #sensor = sds011.SDS011("/dev/ttyAMA0", use_query_mode="True")
-    sensor = sds011.SDS011("/dev/ttyUSB0", use_query_mode="True")
+    sensor = sds011.SDS011("/dev/ttyAMA0", use_query_mode="True")
+    #sensor = sds011.SDS011("/dev/ttyUSB0", use_query_mode="True")
 except Exception as e:
     write_log(e)
 
@@ -110,6 +110,7 @@ calibration_params = bme280.load_calibration_params(bus, address)
 # the sample method will take a single reading and return a
 # compensated_reading object
 data = bme280.sample(bus, address, calibration_params)
+#data = {}
 
 # the compensated_reading class has the following attributes
 print(data.id)
