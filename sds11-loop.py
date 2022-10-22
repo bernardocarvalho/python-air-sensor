@@ -9,13 +9,13 @@ __version__ = "1.0"
 
 import csv, time, datetime
 from sds011 import SDS011
-sensor = SDS011("/dev/ttyUSB0", use_query_mode=True)
+sensor = SDS011("/dev/tty_airsensor", use_query_mode=True)
 try:
     #with open("measurments.csv","w") as csvfile:
     with open("measurments.csv","a") as csvfile:
-        log = csv.writer(csvfile, delimiter=" ",quotechar="|", quoting=csv.QUOTE_MINIMAL)
+        log = csv.writer(csvfile, delimiter=',',quotechar="'") #, quoting=csv.QUOTE_MINIMAL)
         #logcols = ["timestamp","pm2.5","pm10","device_id"]
-        logcols = ["timestamp          ","pm2.5   ","pm10"]
+        logcols = ['timestamp','pm2_5','pm10']
         log.writerow(logcols)
         while True:
             sensor.sleep(sleep=False)  # Turn on fan and diode
@@ -29,7 +29,7 @@ try:
             csvfile.flush()
             print(vals)
             # print(val2)
-            time.sleep(100)  # Wait next cycle
+            time.sleep(280)  # Wait next 5 min cycle
 
 except KeyboardInterrupt:
     sensor.sleep()  # Turn off fan and diode
